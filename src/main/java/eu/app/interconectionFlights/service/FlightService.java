@@ -1,5 +1,6 @@
 package eu.app.interconectionFlights.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public interface FlightService {
 
 	public List<Route> getAllRoutes();
 
-	public FlightSchedule getSchedule(String departure, String arrival, int year, int month); 
+	public List<FlightSchedule> getFlights(String departure, String arrival, LocalDateTime departureDateTime, LocalDateTime arrivalDateTime);
 	
 
 }
