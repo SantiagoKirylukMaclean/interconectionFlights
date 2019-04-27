@@ -49,5 +49,7 @@ public class Leg {
 		this.departureDateTime = departureDateTime;
 		this.arrivalDateTime = arrivalDateTime;
 	}
+	
+	
 
 }

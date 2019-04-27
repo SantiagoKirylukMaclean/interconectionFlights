@@ -1,17 +1,17 @@
 package eu.app.interconectionFlights.service.impl;
 
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import eu.app.interconectionFlights.model.DayFlight;
+import eu.app.interconectionFlights.model.Flight;
 import eu.app.interconectionFlights.model.FlightSchedule;
+import eu.app.interconectionFlights.model.Leg;
 import eu.app.interconectionFlights.model.Route;
 import eu.app.interconectionFlights.model.Schedule;
 import eu.app.interconectionFlights.repository.RoutesRepository;
@@ -26,6 +26,7 @@ public class FlightServiceImpl implements FlightService{
 	private RoutesRepository routesRepository;
 	
 	@Autowired
+	@Qualifier(value = "ScheduleRepositoryJsonImpl")
 	private ScheduleRepository scheduleRepository;
 	
 	public List<Route> getAllRoutes() {
@@ -54,12 +55,28 @@ public class FlightServiceImpl implements FlightService{
 	
 	public List<FlightSchedule> getDirectConnections(String departure, String arrival, LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
 		
-		int month = departureDateTime.getMonthValue();
-		int year = departureDateTime.getYear();
-		int day = departureDateTime.getDayOfMonth();
-		Schedule schedule = scheduleRepository.get(departure, arrival, month, year);
-		List<DayFlight> schedule2 = schedule.getDays().stream().filter(d -> d.getDay() == day).collect(Collectors.toList());
-		return null;
+		int departureMonth = departureDateTime.getMonthValue();
+		int departureYear = departureDateTime.getYear();
+		int departureDay = departureDateTime.getDayOfMonth();
+		int departureHour = departureDateTime.getHour();
+		int departureMinute = departureDateTime.getMinute();
+		int arrivalHour = arrivalDateTime.getHour();
+		int arrivalMinute = arrivalDateTime.getMinute();
+		boolean test = departureDateTime.isBefore(arrivalDateTime); 
+		Schedule schedule = scheduleRepository.get(departure, arrival, departureMonth, departureYear);
+		List<DayFlight> schedule2 = schedule.getDays().stream().filter(d -> d.getDay() == departureDay).collect(Collectors.toList());
+		FlightSchedule flightSchedule = new FlightSchedule();
+		List<Leg> legs = null;
+		flightSchedule.setStops(0);
+		for (DayFlight DayFlight : schedule2) {
+			for (Flight Flight : DayFlight.getFlights()) {
+		
+				Leg leg = new Leg(departure, arrival, Flight.getDepartureTime(), Flight.getArrivalTime());
+				legs.add(leg);
+			}
+		}
+		flightSchedule.setLegs(legs);
+		return (List<FlightSchedule>) flightSchedule;
 		
 	}
 	

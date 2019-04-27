@@ -2,6 +2,7 @@ package eu.app.interconectionFlights.repository.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
@@ -9,7 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +18,7 @@ import eu.app.interconectionFlights.model.Schedule;
 import eu.app.interconectionFlights.repository.ScheduleRepository;
 
 
-@Repository
+@Component("ScheduleRepositoryImpl")
 @CacheConfig(cacheNames = "APIRoutesCache")
 public class ScheduleRepositoryImpl implements ScheduleRepository{
 	
@@ -57,5 +58,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
         }
         return null;
     }
+
+
 
 }

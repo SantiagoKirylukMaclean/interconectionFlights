@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.app.interconectionFlights.model.FlightSchedule;
 import eu.app.interconectionFlights.model.Route;
-import eu.app.interconectionFlights.model.Schedule;
 import eu.app.interconectionFlights.service.FlightService;
 
 @RestController

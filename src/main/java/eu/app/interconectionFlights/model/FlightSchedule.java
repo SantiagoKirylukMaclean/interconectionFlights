@@ -22,11 +22,18 @@ public class FlightSchedule {
 	public void setLegs(List<Leg> legs) {
 		this.legs = legs;
 	}
+	
 	public FlightSchedule(@JsonProperty("stops") int stops, @JsonProperty("legs") List<Leg> legs) {
 		super();
 		this.stops = stops;
 		this.legs = legs;
 	}
+	
+	public FlightSchedule() {
+		super();
+	}
+	
+
 
 	
 	
