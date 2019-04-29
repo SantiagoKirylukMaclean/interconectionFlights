@@ -49,6 +49,13 @@ public class Leg {
 		this.departureDateTime = departureDateTime;
 		this.arrivalDateTime = arrivalDateTime;
 	}
+
+	public Leg() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+
 	
 	
 

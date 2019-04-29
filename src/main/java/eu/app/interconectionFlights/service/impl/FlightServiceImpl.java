@@ -1,6 +1,8 @@
 package eu.app.interconectionFlights.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +28,7 @@ public class FlightServiceImpl implements FlightService{
 	private RoutesRepository routesRepository;
 	
 	@Autowired
-	@Qualifier(value = "ScheduleRepositoryJsonImpl")
+	@Qualifier(value = "ScheduleRepositoryImpl")
 	private ScheduleRepository scheduleRepository;
 	
 	public List<Route> getAllRoutes() {
@@ -65,8 +67,9 @@ public class FlightServiceImpl implements FlightService{
 		boolean test = departureDateTime.isBefore(arrivalDateTime); 
 		Schedule schedule = scheduleRepository.get(departure, arrival, departureMonth, departureYear);
 		List<DayFlight> schedule2 = schedule.getDays().stream().filter(d -> d.getDay() == departureDay).collect(Collectors.toList());
+		List<FlightSchedule> flightsAviable = new ArrayList<FlightSchedule>();
 		FlightSchedule flightSchedule = new FlightSchedule();
-		List<Leg> legs = null;
+		List<Leg> legs = new ArrayList<Leg>();
 		flightSchedule.setStops(0);
 		for (DayFlight DayFlight : schedule2) {
 			for (Flight Flight : DayFlight.getFlights()) {
@@ -76,7 +79,8 @@ public class FlightServiceImpl implements FlightService{
 			}
 		}
 		flightSchedule.setLegs(legs);
-		return (List<FlightSchedule>) flightSchedule;
+		flightsAviable.add(flightSchedule);
+		return flightsAviable;
 		
 	}
 	
