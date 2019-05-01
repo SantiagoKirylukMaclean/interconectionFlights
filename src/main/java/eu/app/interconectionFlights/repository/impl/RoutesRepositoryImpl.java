@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,6 +28,7 @@ import eu.app.interconectionFlights.repository.RoutesRepository;
 @Repository
 @CacheConfig(cacheNames = "APIRoutesCache")
 public class RoutesRepositoryImpl implements RoutesRepository {
+	private static Logger log = LogManager.getLogger(RoutesRepositoryImpl.class);
 	
 	@Value("${url.api.routes}")
 	String APIRoutesUrl;
@@ -37,7 +40,7 @@ public class RoutesRepositoryImpl implements RoutesRepository {
             uri = new URI(APIRoutesUrl);
             return getRoutes(uri);
         } catch (URISyntaxException e) {
-            //LOGGER.error(String.format("URISyntaxException: %s", e.getMessage()));
+        	log.error(String.format("URISyntaxException: %s", e.getMessage()));
             return Collections.emptyList();
         }
     }
@@ -49,12 +52,12 @@ public class RoutesRepositoryImpl implements RoutesRepository {
                     new ParameterizedTypeReference<List<Route>>() {
                     });
             if (response.getStatusCode().is2xxSuccessful()) {
-                //LOGGER.info(String.format("%d routes has been found!", response.getBody().size()));
+            	log.info(String.format("exist %d routes", response.getBody().size()));
                 Predicate<Route> connectingAirportIsNull = p -> Strings.isNullOrEmpty(p.getConnectingAirport());
                 return response.getBody().stream().filter(connectingAirportIsNull).collect(Collectors.toList());
             }
         } catch (final HttpClientErrorException e) {
-            //LOGGER.error(String.format("%s: %s", e.getStatusCode(), e.getResponseBodyAsString()));
+        	log.error(String.format("%s: %s", e.getStatusCode(), e.getResponseBodyAsString()));
         }
         return Collections.emptyList();
     }

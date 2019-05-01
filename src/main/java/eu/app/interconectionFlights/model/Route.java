@@ -8,24 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Route implements Serializable {
 	private static final long serialVersionUID = 1L;
-	@JsonProperty
-	private String airportFrom;
-	@JsonProperty
-	private String airportTo;// "STN",
-	@JsonProperty
-	private String connectingAirport;// null,
-	@JsonProperty
-	private boolean newRoute;// false,
-	@JsonProperty
-	private boolean seasonalRoute;// false,
-	@JsonProperty
-	private String operator;// "RYANAIR",
-	@JsonProperty
-	private String group;// "CITY",
-	@JsonProperty
-	private String carrierCode;// FR"
 
-	// @JsonCreator
+	private String airportFrom;
+	private String airportTo;
+	private String connectingAirport;
+	private boolean newRoute;
+	private boolean seasonalRoute;
+	private String operator;
+	private String group;
+	private String carrierCode;
+
+
 	public Route(@JsonProperty("airportFrom") String airportFrom, @JsonProperty("airportTo") String airportTo,
 			@JsonProperty("connectingAirport") String connectingAirport, @JsonProperty("newRoute") boolean newRoute,
 			@JsonProperty("seasonalRoute") boolean seasonalRoute, @JsonProperty("operator") String operator,

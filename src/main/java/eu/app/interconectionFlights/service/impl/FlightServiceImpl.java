@@ -2,90 +2,66 @@ package eu.app.interconectionFlights.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import eu.app.interconectionFlights.model.DayFlight;
-import eu.app.interconectionFlights.model.Flight;
 import eu.app.interconectionFlights.model.FlightSchedule;
-import eu.app.interconectionFlights.model.Leg;
 import eu.app.interconectionFlights.model.Route;
 import eu.app.interconectionFlights.model.Schedule;
 import eu.app.interconectionFlights.repository.RoutesRepository;
 import eu.app.interconectionFlights.repository.ScheduleRepository;
 import eu.app.interconectionFlights.service.FlightService;
 
-
 @Service
-public class FlightServiceImpl implements FlightService{
-	
+public class FlightServiceImpl implements FlightService {
+	private static Logger log = LogManager.getLogger(FlightServiceImpl.class);
+
 	@Autowired
 	private RoutesRepository routesRepository;
-	
+
 	@Autowired
-	@Qualifier(value = "ScheduleRepositoryImpl")
 	private ScheduleRepository scheduleRepository;
-	
+
+    /**
+     * Return a list of availables routes
+     * 
+     * @param 
+     * @return List<Rute>
+     */
 	public List<Route> getAllRoutes() {
 		return routesRepository.getAll();
 	}
-	
-	/*
-	public Schedule getSchedule(String departure, String arrival, int year, int month) {
-		return scheduleRepository.get(departure, arrival, month, year);
-	}
-	
-	public List<FlightSchedule> getSchedule(String departure, String arrival, int year, int month) {
-		 List<FlightSchedule> flightSchedule = getDirectConnections(departure, arrival, year, month);
+
+    /**
+     * Return a list of availables Flights
+     * 
+     * @param departure
+     * @param arrival
+     * @param departureDateTime
+     * @param arrivalDateTime
+     * @return List<FlightSchedule>
+     */
+	public List<FlightSchedule> getFlights(String departure, String arrival, LocalDateTime departureDateTime,
+			LocalDateTime arrivalDateTime) {
+		DirectFlights directFlights = new DirectFlights();
+		NonDirectFlights NonDirectFlights = new NonDirectFlights();
+		List<FlightSchedule> flightSchedule = new ArrayList<FlightSchedule>();
+
+		Schedule schedule = scheduleRepository.get(departure, arrival, departureDateTime.getMonthValue(),
+				arrivalDateTime.getYear());
 		
-		return flightSchedule;
-	}
-	*/
-	public List<FlightSchedule> getFlights(String departure, String arrival, LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
-		 
-		List<FlightSchedule> flightSchedule = getDirectConnections(departure, arrival, departureDateTime, arrivalDateTime);
-		
-		return flightSchedule;
-	}
-	
-	//TODO:sacarlo de aca
-	
-	public List<FlightSchedule> getDirectConnections(String departure, String arrival, LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
-		
-		int departureMonth = departureDateTime.getMonthValue();
-		int departureYear = departureDateTime.getYear();
-		int departureDay = departureDateTime.getDayOfMonth();
-		int departureHour = departureDateTime.getHour();
-		int departureMinute = departureDateTime.getMinute();
-		int arrivalHour = arrivalDateTime.getHour();
-		int arrivalMinute = arrivalDateTime.getMinute();
-		boolean test = departureDateTime.isBefore(arrivalDateTime); 
-		Schedule schedule = scheduleRepository.get(departure, arrival, departureMonth, departureYear);
-		List<DayFlight> schedule2 = schedule.getDays().stream().filter(d -> d.getDay() == departureDay).collect(Collectors.toList());
-		List<FlightSchedule> flightsAviable = new ArrayList<FlightSchedule>();
-		FlightSchedule flightSchedule = new FlightSchedule();
-		List<Leg> legs = new ArrayList<Leg>();
-		flightSchedule.setStops(0);
-		for (DayFlight DayFlight : schedule2) {
-			for (Flight Flight : DayFlight.getFlights()) {
-		
-				Leg leg = new Leg(departure, arrival, Flight.getDepartureTime(), Flight.getArrivalTime());
-				legs.add(leg);
-			}
+		if (schedule != null) {
+			flightSchedule.addAll(directFlights.getDirectConnections(schedule, departure, arrival, departureDateTime,
+					arrivalDateTime));
+			flightSchedule.addAll(NonDirectFlights.getNonDirectConnections(scheduleRepository, routesRepository,
+					departure, arrival, departureDateTime, arrivalDateTime));
 		}
-		flightSchedule.setLegs(legs);
-		flightsAviable.add(flightSchedule);
-		return flightsAviable;
 		
+		return flightSchedule;
 	}
-	
-
-	
-
 
 }
