@@ -13,6 +13,7 @@ public class Flight implements Serializable{
 	private String number;
     private String departureTime;
     private String arrivalTime;
+    
 	public String getNumber() {
 		return number;
 	}

@@ -46,7 +46,7 @@ public class NonDirectFlights {
 		List<FlightSchedule> flightsFromTheStops = new ArrayList<FlightSchedule>();
 		
 		List<Stop> stops = getNonDirectRoutes(routes, departure, arrival);
-		
+		log.info(String.format("exist %d routes whit 1 stop", stops.size()));
 		String from = "", to = "";
 		for (Stop stop : stops) {
 			from = stop.getTo().getAirportFrom();
@@ -76,7 +76,7 @@ public class NonDirectFlights {
 				fromTo_departureDateTime = LocalDateTime.parse(candidate.getDepartureDateTime());
 				fromTo_arrivalDateTime = LocalDateTime.parse(candidate.getArrivalDateTime());
 				if (fromTo_departureDateTime.isAfter(minDepartureFromStop)) {
-
+					
 					if (utility.validFlight(departureDateTime, arrivalDateTime, fromTo_departureDateTime,
 							fromTo_arrivalDateTime)) {
 						flightsAvailables.add(utility.createFlightResult(flightTo.getLegs().get(0), candidate));
@@ -107,6 +107,7 @@ public class NonDirectFlights {
 			airportFrom = arrivesTo.getAirportFrom();
 			routesAlternative = departFrom.stream().filter(arriveTo(airportFrom)).collect(Collectors.toList());
 			for (Route departsFrom : routesAlternative) {
+				log.info(String.format("Add new Stop departsFrom %s arrivesTo %s", departsFrom, arrivesTo));
 				stops.add(new Stop(departsFrom, arrivesTo));
 			}
 		}
