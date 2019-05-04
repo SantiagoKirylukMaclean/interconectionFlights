@@ -46,7 +46,7 @@ public class NonDirectFlights {
 		List<FlightSchedule> flightsFromTheStops = new ArrayList<FlightSchedule>();
 		
 		List<Stop> stops = getNonDirectRoutes(routes, departure, arrival);
-		log.info(String.format("exist %d routes whit 1 stop", stops.size()));
+		log.info(String.format("exist %d routes with 1 stop", stops.size()));
 		String from = "", to = "";
 		for (Stop stop : stops) {
 			from = stop.getTo().getAirportFrom();
