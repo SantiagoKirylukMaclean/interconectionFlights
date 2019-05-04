@@ -14,7 +14,7 @@ import java.util.*;
 
 public class Main {
     private static ArrayList<Route> serviceResult = new ArrayList<>();
-    private static final HashMap<String, HashSet<String>> routes = new HashMap<>();
+    private static final HashMap<String, HashSet<String>> routesInHash = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -82,11 +82,11 @@ public class Main {
         for (Route route :
                 serviceResult) {
 
-            if (!routes.containsKey(route.getAirportFrom())) {
-                routes.put(route.getAirportFrom(), new HashSet<>());
+            if (!routesInHash.containsKey(route.getAirportFrom())) {
+                routesInHash.put(route.getAirportFrom(), new HashSet<>());
             }
 
-            HashSet<String> from = routes.get(route.getAirportFrom());
+            HashSet<String> from = routesInHash.get(route.getAirportFrom());
 
             if (!from.contains(route.getAirportTo())) {
                 from.add(route.getAirportTo());
@@ -97,10 +97,10 @@ public class Main {
     public static List<String> getConnectionAirport(String from, String to) {
         List<String> result = new ArrayList<>();
 
-        HashSet<String> firstLegFlights = routes.get(from);
+        HashSet<String> firstLegFlights = routesInHash.get(from);
 
         for (String firstLegDestination : firstLegFlights) {
-            HashSet<String> secondLegFlights = routes.get(firstLegDestination);
+            HashSet<String> secondLegFlights = routesInHash.get(firstLegDestination);
 
             if (secondLegFlights != null && secondLegFlights.contains(to)) {
                 result.add(firstLegDestination);
