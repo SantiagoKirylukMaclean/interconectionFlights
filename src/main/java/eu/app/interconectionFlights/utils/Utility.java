@@ -48,12 +48,9 @@ public class Utility {
 		FlightSchedule flightResult;
 		List<Schedule> schedules = getSchedules(scheduleFinderService, from, to, startDateTime, endDateTime);
 		if (!schedules.isEmpty()) {
-			List<DayFlight> flightsDays = schedules.stream().flatMap(ff -> ff.getDays().stream())
-					.collect(Collectors.toList());
-			//List<DayFlight> flightsOfDay = flightsDays.stream().filter(ddd -> ddd.getDay() == startDateTime.getDayOfMonth()).collect(Collectors.toList());
+			List<DayFlight> flightsDays = schedules.stream().flatMap(schedule -> schedule.getDays().stream()).collect(Collectors.toList());
 			List<DayFlight> flightsOfDay = flightsDays.stream().filter(getDay(startDateTime)).collect(Collectors.toList());
-			List<Flight> flights = flightsOfDay.stream().flatMap(add -> add.getFlights().stream())
-					.collect(Collectors.toList());
+			List<Flight> flights = flightsOfDay.stream().flatMap(flight -> flight.getFlights().stream()).collect(Collectors.toList());
 			month = startDateTime.getMonthValue();
 			day = startDateTime.getDayOfMonth();
 			for (Flight flight : flights) {
@@ -72,14 +69,20 @@ public class Utility {
 	}
 
     /**
-     * Condition to check the arrival airport of a Route
+     * return all flight of particular day
      * 
-     * @param airport
-     * @return
+     * @param startDateTime
+     * @return Predicate<DayFlight>
      */
     private Predicate<DayFlight> getDay(LocalDateTime startDateTime) {
-        return ddd -> ddd.getDay() == startDateTime.getDayOfMonth();
+        return dayFlight -> dayFlight.getDay() == startDateTime.getDayOfMonth();
     }
+    
+    private Predicate<Schedule> getDay(Schedule schedule) {
+        return schedule -> schedule.getDays().stream();
+    }
+    
+    
 	/**
 	 * Scheduled flights list
 	 * 
