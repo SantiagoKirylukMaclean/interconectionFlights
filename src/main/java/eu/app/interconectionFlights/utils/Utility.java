@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -49,8 +50,8 @@ public class Utility {
 		if (!schedules.isEmpty()) {
 			List<DayFlight> flightsDays = schedules.stream().flatMap(ff -> ff.getDays().stream())
 					.collect(Collectors.toList());
-			List<DayFlight> flightsOfDay = flightsDays.stream()
-					.filter(ddd -> ddd.getDay() == startDateTime.getDayOfMonth()).collect(Collectors.toList());
+			//List<DayFlight> flightsOfDay = flightsDays.stream().filter(ddd -> ddd.getDay() == startDateTime.getDayOfMonth()).collect(Collectors.toList());
+			List<DayFlight> flightsOfDay = flightsDays.stream().filter(getDay(startDateTime)).collect(Collectors.toList());
 			List<Flight> flights = flightsOfDay.stream().flatMap(add -> add.getFlights().stream())
 					.collect(Collectors.toList());
 			month = startDateTime.getMonthValue();
@@ -70,6 +71,15 @@ public class Utility {
 		return flightsAvailables;
 	}
 
+    /**
+     * Condition to check the arrival airport of a Route
+     * 
+     * @param airport
+     * @return
+     */
+    private Predicate<DayFlight> getDay(LocalDateTime startDateTime) {
+        return ddd -> ddd.getDay() == startDateTime.getDayOfMonth();
+    }
 	/**
 	 * Scheduled flights list
 	 * 

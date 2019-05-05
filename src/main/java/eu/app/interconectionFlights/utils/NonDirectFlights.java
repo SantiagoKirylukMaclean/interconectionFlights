@@ -96,29 +96,7 @@ public class NonDirectFlights {
 
 		return flightsAvailables;
 	}
-
-	/**
-	 *put in Hash al routes Legs
-	 * 
-	 * @param routes
-	 * @return
-	 */
-	private static void populateRoutes(List<Route> routes) {
-		for (Route route : routes) {
-
-			if (!routesInHash.containsKey(route.getAirportFrom())) {
-				routesInHash.put(route.getAirportFrom(), new HashSet<>());
-			}
-
-			HashSet<String> from = routesInHash.get(route.getAirportFrom());
-
-			if (!from.contains(route.getAirportTo())) {
-				from.add(route.getAirportTo());
-				
-			}
-		}
-	}
-
+	
 	/**
 	 * Get all routes legs
 	 * 
@@ -145,54 +123,25 @@ public class NonDirectFlights {
 	}
 
 	/**
-	 * get arrival Airport
+	 *put in Hash al routes Legs
 	 * 
 	 * @param routes
-	 * @param airport
-	 * @return List<Route>
+	 * @return
 	 */
-	private List<Route> getArriveTo(List<Route> routes, String airport) {
-		return routes.stream().filter(arriveTo(airport)).collect(Collectors.toList());
-	}
+	private static void populateRoutes(List<Route> routes) {
+		for (Route route : routes) {
 
-	/**
-	 * Check arrival airport of a Route
-	 * 
-	 * @param airport
-	 * @return Predicate<Route>
-	 */
-	private Predicate<Route> arriveTo(String airport) {
-		return p -> p.getAirportTo().equalsIgnoreCase(airport);
-	}
+			if (!routesInHash.containsKey(route.getAirportFrom())) {
+				routesInHash.put(route.getAirportFrom(), new HashSet<>());
+			}
 
-	/**
-	 * Get departure airport
-	 * 
-	 * @param airport
-	 * @return List<Route>
-	 */
-	private List<Route> getDepartFrom(List<Route> routes, String airport) {
-		return routes.stream().filter(departFrom(airport)).collect(Collectors.toList());
-	}
+			HashSet<String> from = routesInHash.get(route.getAirportFrom());
 
-	/**
-	 * Check departure airport of a Route
-	 * 
-	 * @param airport
-	 * @return Predicate<Route>
-	 */
-	private Predicate<Route> departFrom(String airport) {
-		return p -> p.getAirportFrom().equalsIgnoreCase(airport);
-	}
-
-	/**
-	 * Check if I can go to airport from another Leg
-	 * 
-	 * @param airport
-	 * @return Predicate<FlightSchedule>
-	 */
-	private Predicate<FlightSchedule> departFromStop(String airport) {
-		return p -> p.getLegs().get(0).getDepartureAirport().equalsIgnoreCase(airport);
+			if (!from.contains(route.getAirportTo())) {
+				from.add(route.getAirportTo());
+				
+			}
+		}
 	}
 
 }
