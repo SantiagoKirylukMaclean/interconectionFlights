@@ -1,29 +1,29 @@
-package eu.app.interconectionFlights.service.impl;
+package eu.app.interconectionFlights.utils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import eu.app.interconectionFlights.controller.FlightController;
 import eu.app.interconectionFlights.model.DayFlight;
 import eu.app.interconectionFlights.model.Flight;
 import eu.app.interconectionFlights.model.FlightSchedule;
 import eu.app.interconectionFlights.model.Leg;
 import eu.app.interconectionFlights.model.Schedule;
-import eu.app.interconectionFlights.repository.ScheduleRepository;
-import eu.app.interconectionFlights.utils.Utility;
 
 public class DirectFlights {
 	private static Logger log = LogManager.getLogger(DirectFlights.class);
+	 private static final DirectFlights INSTANCE = new DirectFlights();
 
+    private DirectFlights() {
+    }
+
+    public static DirectFlights getInstance() {
+        return INSTANCE;
+    }
 	/**
 	 * Return a list of availables Flights
 	 * 

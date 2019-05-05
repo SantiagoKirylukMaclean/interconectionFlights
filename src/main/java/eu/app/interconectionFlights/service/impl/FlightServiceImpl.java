@@ -15,6 +15,9 @@ import eu.app.interconectionFlights.model.Schedule;
 import eu.app.interconectionFlights.repository.RoutesRepository;
 import eu.app.interconectionFlights.repository.ScheduleRepository;
 import eu.app.interconectionFlights.service.FlightService;
+import eu.app.interconectionFlights.utils.DirectFlights;
+import eu.app.interconectionFlights.utils.NonDirectFlights;
+import eu.app.interconectionFlights.utils.Utility;
 
 @Service
 public class FlightServiceImpl implements FlightService {
@@ -47,8 +50,9 @@ public class FlightServiceImpl implements FlightService {
      */
 	public List<FlightSchedule> getFlights(String departure, String arrival, LocalDateTime departureDateTime,
 			LocalDateTime arrivalDateTime) {
-		DirectFlights directFlights = new DirectFlights();
-		NonDirectFlights NonDirectFlights = new NonDirectFlights();
+		DirectFlights directFlights = DirectFlights.getInstance();
+		NonDirectFlights nonDirectFlights = NonDirectFlights.getInstance();
+		
 		List<FlightSchedule> flightSchedule = new ArrayList<FlightSchedule>();
 
 		Schedule schedule = scheduleRepository.get(departure, arrival, departureDateTime.getMonthValue(),
@@ -57,7 +61,7 @@ public class FlightServiceImpl implements FlightService {
 		if (schedule != null) {
 			flightSchedule.addAll(directFlights.getDirectConnections(schedule, departure, arrival, departureDateTime,
 					arrivalDateTime));
-			flightSchedule.addAll(NonDirectFlights.getNonDirectConnections(scheduleRepository, routesRepository,
+			flightSchedule.addAll(nonDirectFlights.getNonDirectConnections(scheduleRepository, routesRepository,
 					departure, arrival, departureDateTime, arrivalDateTime));
 		}
 		

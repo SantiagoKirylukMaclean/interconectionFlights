@@ -1,4 +1,4 @@
-package eu.app.interconectionFlights.service.impl;
+package eu.app.interconectionFlights.utils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,14 +14,21 @@ import org.apache.logging.log4j.Logger;
 import eu.app.interconectionFlights.model.FlightSchedule;
 import eu.app.interconectionFlights.model.Leg;
 import eu.app.interconectionFlights.model.Route;
-import eu.app.interconectionFlights.model.Stop;
 import eu.app.interconectionFlights.repository.RoutesRepository;
 import eu.app.interconectionFlights.repository.ScheduleRepository;
-import eu.app.interconectionFlights.utils.Utility;
 
 public class NonDirectFlights {
 	private static Logger log = LogManager.getLogger(NonDirectFlights.class);
 	private static final HashMap<String, HashSet<String>> routesInHash = new HashMap<>();
+	
+    private static final NonDirectFlights INSTANCE = new NonDirectFlights();
+
+    private NonDirectFlights() {
+    }
+
+    public static NonDirectFlights getInstance() {
+        return INSTANCE;
+    }
 
 	/**
 	 * Return a list of availables Flights with 1 stop
@@ -46,7 +53,7 @@ public class NonDirectFlights {
 		List<FlightSchedule> flightsFromTheStops = new ArrayList<FlightSchedule>();
 		List<FlightSchedule> flightsToTheStops = new ArrayList<FlightSchedule>();
 
-		List<String> legs = getNonDirectRoutesHash(routes, departure, arrival);
+		List<String> legs = getNonDirectRoutes(routes, departure, arrival);
 		log.info(String.format("we have %d routes with 1 stop", legs.size()));
 
 		for (String leg : legs) {
@@ -120,7 +127,7 @@ public class NonDirectFlights {
 	 * @param arrival
 	 * @return List<String>
 	 */
-	public List<String> getNonDirectRoutesHash(List<Route> routes, String from, String to) {
+	public List<String> getNonDirectRoutes(List<Route> routes, String from, String to) {
 		List<String> result = new ArrayList<>();
 		populateRoutes(routes);
 		HashSet<String> firstLegFlights = routesInHash.get(from);
