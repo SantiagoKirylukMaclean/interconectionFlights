@@ -22,7 +22,6 @@ import eu.app.interconectionFlights.utils.Utility;
 public class NonDirectFlights {
 	private static Logger log = LogManager.getLogger(NonDirectFlights.class);
 	private static final HashMap<String, HashSet<String>> routesInHash = new HashMap<>();
-	private static ArrayList<Route> serviceResult = new ArrayList<>();
 
 	/**
 	 * Return a list of availables Flights with 1 stop
@@ -44,60 +43,35 @@ public class NonDirectFlights {
 		List<Route> routes = routesRepository.getAll();
 
 		List<FlightSchedule> flightsAvailables = new ArrayList<FlightSchedule>();
-		List<FlightSchedule> flightsToTheStops = new ArrayList<FlightSchedule>();
 		List<FlightSchedule> flightsFromTheStops = new ArrayList<FlightSchedule>();
-		List<FlightSchedule> flightsFromTheStopsHash = new ArrayList<FlightSchedule>();
-		List<FlightSchedule> flightsToTheStopsHash = new ArrayList<FlightSchedule>();
+		List<FlightSchedule> flightsToTheStops = new ArrayList<FlightSchedule>();
 
-		/*
-		List<Stop> stops = getNonDirectRoutes(routes, departure, arrival);
-		log.info(String.format("exist %d routes with 1 stop from For", stops.size()));
-		*/
 		List<String> legs = getNonDirectRoutesHash(routes, departure, arrival);
-		log.info(String.format("exist %d routes with 1 stop From hash", legs.size()));
+		log.info(String.format("we have %d routes with 1 stop", legs.size()));
 
-		/*
-		String from = "", to = "";
-		for (Stop stop : stops) {
-			from = stop.getTo().getAirportFrom();
-			to = stop.getTo().getAirportTo();
-			flightsFromTheStops.addAll(
-					utility.getFlightsAvailables(scheduleRepository, from, to, departureDateTime, arrivalDateTime));
-			from = stop.getFrom().getAirportFrom();
-			to = stop.getFrom().getAirportTo();
-			flightsToTheStops.addAll(
-					utility.getFlightsAvailables(scheduleRepository, from, to, departureDateTime, arrivalDateTime));
-		}
-		 */
 		for (String leg : legs) {
-			flightsToTheStopsHash.addAll(utility.getFlightsAvailables(scheduleRepository, departure, leg,
+			flightsToTheStops.addAll(utility.getFlightsAvailables(scheduleRepository, departure, leg,
 					departureDateTime, arrivalDateTime));
-			flightsFromTheStopsHash.addAll(
+			flightsFromTheStops.addAll(
 					utility.getFlightsAvailables(scheduleRepository, leg, arrival, departureDateTime, arrivalDateTime));
 		}
 
 		Leg candidate;
-		String arrivalAt, arrivalAirport, departureAirport;
+		String arrivalAt, departureAirport;
 
 		LocalDateTime minDepartureFromStop, fromTo_departureDateTime, fromTo_arrivalDateTime;
-		List<FlightSchedule> flightsFromTheStop = new ArrayList<FlightSchedule>();
-		for (FlightSchedule flightTo : flightsToTheStopsHash) {
+		List<FlightSchedule> flightsFromTheStopHash = new ArrayList<FlightSchedule>();
+		for (FlightSchedule flightTo : flightsToTheStops) {
 			departureAirport = flightTo.getLegs().get(0).getDepartureAirport();
-			arrivalAirport = flightTo.getLegs().get(0).getArrivalAirport();
-			final String arrivalAirportHash = flightTo.getLegs().get(0).getArrivalAirport();
+			final String arrivalAirport = flightTo.getLegs().get(0).getArrivalAirport();
 			arrivalAt = flightTo.getLegs().get(0).getArrivalDateTime();
 			minDepartureFromStop = LocalDateTime.parse(arrivalAt).plusHours(2);
-
-			/*
-			 * flightsFromTheStop = flightsFromTheStops.stream().filter(departFromStop(arrivalAirport))
-					.collect(Collectors.toList());
-			*/
 			
-			List<FlightSchedule> flightsFromTheStopHash = flightsFromTheStopsHash.stream()
-					.filter(p -> p.getLegs().get(0).getDepartureAirport().equalsIgnoreCase(arrivalAirportHash))
+			List<FlightSchedule> flightsFromTheStop = flightsFromTheStops.stream()
+					.filter(p -> p.getLegs().get(0).getDepartureAirport().equalsIgnoreCase(arrivalAirport))
 					.collect(Collectors.toList());
 
-			for (FlightSchedule flightFrom : flightsFromTheStopHash) {
+			for (FlightSchedule flightFrom : flightsFromTheStop) {
 				candidate = flightFrom.getLegs().get(0);
 				fromTo_departureDateTime = LocalDateTime.parse(candidate.getDepartureDateTime());
 				fromTo_arrivalDateTime = LocalDateTime.parse(candidate.getArrivalDateTime());
@@ -106,6 +80,8 @@ public class NonDirectFlights {
 					if (utility.validFlight(departureDateTime, arrivalDateTime, fromTo_departureDateTime,
 							fromTo_arrivalDateTime)) {
 						flightsAvailables.add(utility.createFlightResult(flightTo.getLegs().get(0), candidate));
+						log.info(String.format("we have available flight with 1 leg %s %s %s %s", departureDateTime, arrivalDateTime, fromTo_departureDateTime,
+								fromTo_arrivalDateTime));
 					}
 				}
 			}
@@ -115,31 +91,11 @@ public class NonDirectFlights {
 	}
 
 	/**
-	 * Get all routes with 1 stop in the midle
+	 *put in Hash al routes Legs
 	 * 
 	 * @param routes
-	 * @param departure
-	 * @param arrival
-	 * @return List<Stop>
+	 * @return
 	 */
-	public List<Stop> getNonDirectRoutes(List<Route> routes, String departure, String arrival) {
-		List<Route> arriveTo = getArriveTo(routes, arrival);
-		List<Route> departFrom = getDepartFrom(routes, departure);
-		List<Route> routesAlternative = new ArrayList<Route>();
-		List<Stop> stops = new ArrayList<Stop>();
-		String airportFrom;
-		for (Route arrivesTo : arriveTo) {
-			airportFrom = arrivesTo.getAirportFrom();
-			routesAlternative = departFrom.stream().filter(arriveTo(airportFrom)).collect(Collectors.toList());
-			for (Route departsFrom : routesAlternative) {
-				// log.info(String.format("Add new Stop departsFrom %s arrivesTo %s",
-				// departsFrom, arrivesTo));
-				stops.add(new Stop(departsFrom, arrivesTo));
-			}
-		}
-		return stops;
-	}
-
 	private static void populateRoutes(List<Route> routes) {
 		for (Route route : routes) {
 
@@ -151,17 +107,18 @@ public class NonDirectFlights {
 
 			if (!from.contains(route.getAirportTo())) {
 				from.add(route.getAirportTo());
+				
 			}
 		}
 	}
 
 	/**
-	 * Get all routes with 1 stop in the midle
+	 * Get all routes legs
 	 * 
 	 * @param routes
 	 * @param departure
 	 * @param arrival
-	 * @return List<Stop>
+	 * @return List<String>
 	 */
 	public List<String> getNonDirectRoutesHash(List<Route> routes, String from, String to) {
 		List<String> result = new ArrayList<>();
@@ -173,6 +130,7 @@ public class NonDirectFlights {
 
 			if (secondLegFlights != null && secondLegFlights.contains(to)) {
 				result.add(firstLegDestination);
+				log.info(String.format("Add new Leg %s",firstLegDestination));
 			}
 		}
 

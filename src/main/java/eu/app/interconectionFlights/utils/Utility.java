@@ -4,17 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.google.common.base.Joiner;
 
 import eu.app.interconectionFlights.model.DayFlight;
 import eu.app.interconectionFlights.model.Flight;
@@ -22,7 +16,6 @@ import eu.app.interconectionFlights.model.FlightSchedule;
 import eu.app.interconectionFlights.model.Leg;
 import eu.app.interconectionFlights.model.Schedule;
 import eu.app.interconectionFlights.repository.ScheduleRepository;
-import eu.app.interconectionFlights.service.impl.NonDirectFlights;
 
 public class Utility {
 	private static Logger log = LogManager.getLogger(Utility.class);
@@ -37,48 +30,45 @@ public class Utility {
 	}
 
 	/**
-     * Return a list of availables flights
-     * 
-     * @param from
-     * @param to
-     * @param dateTime
-     * @return
-     */
-    public List<FlightSchedule> getFlightsAvailables(ScheduleRepository scheduleFinderService, String from, String to,
-            LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<FlightSchedule> flightsAvailables = new ArrayList<FlightSchedule>();
-        int day = 0;
-        int month = 0;
-        int year = startDateTime.getYear();
-        LocalDateTime departureDateTime, arrivalDateTime;
-        FlightSchedule flightResult;
-        List<Schedule> schedules = getSchedules(scheduleFinderService, from, to, startDateTime, endDateTime);
-        if (!schedules.isEmpty()) {        	
-        	List<DayFlight> fd = schedules.stream().flatMap(ff -> ff.getDays().stream()).collect(Collectors.toList());
-        	List<DayFlight> fdf = fd.stream().filter(ddd -> ddd.getDay() == startDateTime.getDayOfMonth()).collect(Collectors.toList());
-        	List<Flight> f = fdf.stream().flatMap(add -> add.getFlights().stream()).collect(Collectors.toList());
-            //for (Schedule schedule : schedules) { ////Quitar, solo hacerlo por la
-            	log.info(String.format("Scheduled flights: %s", Joiner.on(" + ").join(schedules)));
-                //month = schedule.getMonth();
-                month = startDateTime.getMonthValue();
-                //for (DayFlight dayFlight : schedule.getDays()) { //Quitar, solo hacerlo por lambda
-                    //day = dayFlight.getDay();
-                    day = startDateTime.getDayOfMonth();
-                    //for (Flight flight : dayFlight.getFlights()) {
-                    for (Flight flight : f) {
-                        departureDateTime = createLocalDateTime(year, month, day, flight.getDepartureTime());
-                        arrivalDateTime = createLocalDateTime(year, month, day, flight.getArrivalTime());
-                        if (validFlight(startDateTime, endDateTime, departureDateTime, arrivalDateTime)) {
-                        	log.info(String.format("Create Fligt Result: from %s, to %s, departureTime %s, arrivalTime %s", from, to, departureDateTime, arrivalDateTime));
-                            flightResult = createFlightResult(from, to, departureDateTime, arrivalDateTime);
-                            flightsAvailables.add(flightResult);
-                        }
-                    }
-                //}
-            //}
-        }
-        return flightsAvailables;
-    }
+	 * Return a list of availables flights
+	 * 
+	 * @param from
+	 * @param to
+	 * @param dateTime
+	 * @return
+	 */
+	public List<FlightSchedule> getFlightsAvailables(ScheduleRepository scheduleFinderService, String from, String to,
+			LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		List<FlightSchedule> flightsAvailables = new ArrayList<FlightSchedule>();
+		int day = 0;
+		int month = 0;
+		int year = startDateTime.getYear();
+		LocalDateTime departureDateTime, arrivalDateTime;
+		FlightSchedule flightResult;
+		List<Schedule> schedules = getSchedules(scheduleFinderService, from, to, startDateTime, endDateTime);
+		if (!schedules.isEmpty()) {
+			List<DayFlight> flightsDays = schedules.stream().flatMap(ff -> ff.getDays().stream())
+					.collect(Collectors.toList());
+			List<DayFlight> flightsOfDay = flightsDays.stream()
+					.filter(ddd -> ddd.getDay() == startDateTime.getDayOfMonth()).collect(Collectors.toList());
+			List<Flight> flights = flightsOfDay.stream().flatMap(add -> add.getFlights().stream())
+					.collect(Collectors.toList());
+			month = startDateTime.getMonthValue();
+			day = startDateTime.getDayOfMonth();
+			for (Flight flight : flights) {
+				departureDateTime = createLocalDateTime(year, month, day, flight.getDepartureTime());
+				arrivalDateTime = createLocalDateTime(year, month, day, flight.getArrivalTime());
+				if (validFlight(startDateTime, endDateTime, departureDateTime, arrivalDateTime)) {
+					log.info(String.format("Create Fligt Result: from %s, to %s, departureTime %s, arrivalTime %s",
+							from, to, departureDateTime, arrivalDateTime));
+					flightResult = createFlightResult(from, to, departureDateTime, arrivalDateTime);
+					flightsAvailables.add(flightResult);
+				}
+			}
+
+		}
+		return flightsAvailables;
+	}
 
 	/**
 	 * Scheduled flights list
