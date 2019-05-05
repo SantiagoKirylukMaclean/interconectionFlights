@@ -1,6 +1,8 @@
 package eu.app.interconectionFlights.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,9 +38,13 @@ public class DirectFlights {
 			LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
 
 		Utility utils = Utility.getInstance();
+
 		int departureMonth = departureDateTime.getMonthValue();
 		int departureYear = departureDateTime.getYear();
 		int departureDay = departureDateTime.getDayOfMonth();
+		int arrivalMonth = arrivalDateTime.getMonthValue();
+		int arrivalYear = arrivalDateTime.getYear();
+		int arrivalDay = arrivalDateTime.getDayOfMonth();
 
 		List<DayFlight> dayFlightSchedule = schedule.getDays().stream().filter(d -> d.getDay() == departureDay)
 				.collect(Collectors.toList());
@@ -46,18 +52,20 @@ public class DirectFlights {
 		FlightSchedule flightSchedule = new FlightSchedule();
 		List<Leg> legs = new ArrayList<Leg>();
 		flightSchedule.setStops(0);
+
 		if (!dayFlightSchedule.isEmpty()) {
-			 log.info(String.format("exists flight on day %s", departureDay));
 			for (DayFlight DayFlight : dayFlightSchedule) {
 				if (!DayFlight.getFlights().isEmpty()) {
+					log.info(String.format("we have %s flight on day %s", DayFlight.getFlights().size(),
+							departureDay));
 					for (Flight Flight : DayFlight.getFlights()) {
-
-						Leg leg = new Leg(departure, arrival,
-								utils.createLocalDateTime(departureYear, departureMonth, departureDay,
-										Flight.getDepartureTime()).toString(),
-								utils.createLocalDateTime(departureYear, departureMonth, departureDay,
-										Flight.getArrivalTime()).toString());
-						legs.add(leg);
+						if (departureDateTime.isBefore(utils.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getDepartureTime()))
+							&& arrivalDateTime.isAfter(utils.createLocalDateTime(arrivalYear, arrivalMonth,arrivalDay, Flight.getArrivalTime()))) {
+							Leg leg = new Leg(departure, arrival, 
+											utils.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getDepartureTime()).toString(),
+											utils.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getArrivalTime()).toString());
+							legs.add(leg);
+						}
 					}
 				}
 			}
