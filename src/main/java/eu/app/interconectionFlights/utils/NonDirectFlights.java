@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -123,7 +122,7 @@ public class NonDirectFlights {
 	}
 
 	/**
-	 *put in Hash al routes Legs
+	 *put in Hash all routes Legs
 	 * 
 	 * @param routes
 	 * @return

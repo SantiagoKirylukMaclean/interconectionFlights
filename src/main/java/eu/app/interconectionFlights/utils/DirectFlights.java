@@ -37,7 +37,7 @@ public class DirectFlights {
 	public List<FlightSchedule> getDirectConnections(Schedule schedule, String departure, String arrival,
 			LocalDateTime departureDateTime, LocalDateTime arrivalDateTime) {
 
-		Utility utils = Utility.getInstance();
+		Utility utility = Utility.getInstance();
 
 		int departureMonth = departureDateTime.getMonthValue();
 		int departureYear = departureDateTime.getYear();
@@ -49,9 +49,8 @@ public class DirectFlights {
 		List<DayFlight> dayFlightSchedule = schedule.getDays().stream().filter(d -> d.getDay() == departureDay)
 				.collect(Collectors.toList());
 		List<FlightSchedule> flightsAviable = new ArrayList<FlightSchedule>();
-		FlightSchedule flightSchedule = new FlightSchedule();
 		List<Leg> legs = new ArrayList<Leg>();
-		flightSchedule.setStops(0);
+		
 
 		if (!dayFlightSchedule.isEmpty()) {
 			for (DayFlight DayFlight : dayFlightSchedule) {
@@ -59,18 +58,16 @@ public class DirectFlights {
 					log.info(String.format("we have %s flight on day %s", DayFlight.getFlights().size(),
 							departureDay));
 					for (Flight Flight : DayFlight.getFlights()) {
-						if (departureDateTime.isBefore(utils.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getDepartureTime()))
-							&& arrivalDateTime.isAfter(utils.createLocalDateTime(arrivalYear, arrivalMonth,arrivalDay, Flight.getArrivalTime()))) {
-							Leg leg = new Leg(departure, arrival, 
-											utils.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getDepartureTime()).toString(),
-											utils.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getArrivalTime()).toString());
-							legs.add(leg);
+
+						if (departureDateTime.isBefore(utility.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getDepartureTime()))
+							&& arrivalDateTime.isAfter(utility.createLocalDateTime(arrivalYear, arrivalMonth,arrivalDay, Flight.getArrivalTime()))) {
+							flightsAviable.add(utility.createFlightResult(departure, arrival, 
+																		  utility.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getDepartureTime()),
+																		  utility.createLocalDateTime(departureYear, departureMonth, departureDay,Flight.getArrivalTime())));
 						}
 					}
 				}
 			}
-			flightSchedule.setLegs(legs);
-			flightsAviable.add(flightSchedule);
 		}
 		return flightsAviable;
 

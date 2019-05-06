@@ -14,7 +14,7 @@ public class DayFlight implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private int day;
     private List<Flight> flights;
-    //private Collection<Flight> flights;
+
     
     
 	public int getDay() {

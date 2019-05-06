@@ -67,20 +67,6 @@ public class Utility {
 		}
 		return flightsAvailables;
 	}
-
-    /**
-     * return all flight of particular day
-     * 
-     * @param startDateTime
-     * @return Predicate<DayFlight>
-     */
-    private Predicate<DayFlight> getDay(LocalDateTime startDateTime) {
-        return dayFlight -> dayFlight.getDay() == startDateTime.getDayOfMonth();
-    }
-    
-    private Predicate<Schedule> getDay(Schedule schedule) {
-        return schedule -> schedule.getDays().stream();
-    }
     
     
 	/**
@@ -200,4 +186,14 @@ public class Utility {
 		flightResult.setLegs(legs);
 		return flightResult;
 	}
+	
+    /**
+     * return all flight of particular day
+     * 
+     * @param startDateTime
+     * @return Predicate<DayFlight>
+     */
+    private Predicate<DayFlight> getDay(LocalDateTime startDateTime) {
+        return dayFlight -> dayFlight.getDay() == startDateTime.getDayOfMonth();
+    }
 }

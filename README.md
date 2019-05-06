@@ -9,7 +9,7 @@ Application should return a list of flights departing from a given departure air
 
 1. SpringBoot (server and Rest)
 2. JUnit (testing)
-3. Log4j2 (Logs)
+3. Mokito (Testing)
 4. Ehcahce (cache to external rest services)
 
 ## Services

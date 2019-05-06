@@ -1,7 +1,6 @@
 package eu.app.interconectionFlights.model;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +14,6 @@ public class Schedule implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private int month;
     private List<DayFlight> days;
-    //private Collection<DayFlight> days;
     
     
 	public int getMonth() {

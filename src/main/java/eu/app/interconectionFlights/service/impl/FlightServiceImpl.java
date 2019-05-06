@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +15,10 @@ import eu.app.interconectionFlights.repository.ScheduleRepository;
 import eu.app.interconectionFlights.service.FlightService;
 import eu.app.interconectionFlights.utils.DirectFlights;
 import eu.app.interconectionFlights.utils.NonDirectFlights;
-import eu.app.interconectionFlights.utils.Utility;
 
 @Service
 public class FlightServiceImpl implements FlightService {
-	private static Logger log = LogManager.getLogger(FlightServiceImpl.class);
+
 
 	@Autowired
 	private RoutesRepository routesRepository;
@@ -58,12 +55,10 @@ public class FlightServiceImpl implements FlightService {
 		Schedule schedule = scheduleRepository.get(departure, arrival, departureDateTime.getMonthValue(),
 				arrivalDateTime.getYear());
 		
-		if (schedule != null) {
 			flightSchedule.addAll(directFlights.getDirectConnections(schedule, departure, arrival, departureDateTime,
 					arrivalDateTime));
 			flightSchedule.addAll(nonDirectFlights.getNonDirectConnections(scheduleRepository, routesRepository,
 					departure, arrival, departureDateTime, arrivalDateTime));
-		}
 		
 		return flightSchedule;
 	}

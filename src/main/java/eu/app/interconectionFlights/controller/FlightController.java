@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import eu.app.interconectionFlights.model.FlightSchedule;
-import eu.app.interconectionFlights.model.Route;
 import eu.app.interconectionFlights.service.FlightService;
 
 
@@ -25,17 +24,6 @@ public class FlightController {
 
 	@Autowired
 	private FlightService flightService;
-
-    /**
-     * Return a list of availables routes
-     * 
-     * @param 
-     * @return List<Rute>
-     */
-	@RequestMapping("/api/v1/routes/")
-	public List<Route> findAllRoutes() throws Exception {
-		return flightService.getAllRoutes();
-	}
 
     /**
      * Return a list of availables Flights

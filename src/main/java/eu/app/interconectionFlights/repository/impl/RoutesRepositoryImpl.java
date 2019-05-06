@@ -21,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Strings;
 
-import eu.app.interconectionFlights.model.FlightSchedule;
 import eu.app.interconectionFlights.model.Route;
 import eu.app.interconectionFlights.repository.RoutesRepository;
 

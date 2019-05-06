@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import eu.app.interconectionFlights.model.FlightSchedule;
 import eu.app.interconectionFlights.model.Route;
-import eu.app.interconectionFlights.model.Schedule;
 
 @Service
 public interface FlightService {
